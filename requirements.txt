@@ -1,0 +1,7 @@
+numpy==1.19.5
+opencv-python==4.5.5.64
+Pillow==8.4.0
+torch==1.10.2
+torchaudio==0.10.2
+torchvision==0.11.3
+typing_extensions==4.1.1
