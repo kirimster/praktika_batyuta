@@ -37,6 +37,35 @@ class ImageProcessingApp:
 
         self.camera_button = tk.Button(self.control_frame, text="Сделать фото", command=self.capture_from_camera)
         self.camera_button.pack(side=tk.LEFT, padx=5)
+        self.processing_frame = tk.LabelFrame(self.root, text="Обработка изображения")
+        self.processing_frame.pack(fill=tk.X, pady=5)
+
+        # Выбор канала
+        self.channel_var = tk.StringVar(value="none")
+        tk.Label(self.processing_frame, text="Канал:").grid(row=0, column=0, padx=5)
+        tk.Radiobutton(self.processing_frame, text="Красный", variable=self.channel_var, value="red").grid(row=0,
+                                                                                                           column=1,
+                                                                                                           padx=5)
+        tk.Radiobutton(self.processing_frame, text="Зеленый", variable=self.channel_var, value="green").grid(row=0,
+                                                                                                             column=2,
+                                                                                                             padx=5)
+        tk.Radiobutton(self.processing_frame, text="Синий", variable=self.channel_var, value="blue").grid(row=0,
+                                                                                                          column=3,
+                                                                                                          padx=5)
+        self.channel_button = tk.Button(self.processing_frame, text="Применить", command=self.apply_channel)
+        self.channel_button.grid(row=0, column=4, padx=5)
+
+        # Границы
+        tk.Label(self.processing_frame, text="Граница:").grid(row=1, column=0, padx=5)
+        self.border_size = tk.Spinbox(self.processing_frame, from_=1, to=100, width=5)
+        self.border_size.grid(row=1, column=1, padx=5)
+        self.border_button = tk.Button(self.processing_frame, text="Добавить", command=self.apply_border)
+        self.border_button.grid(row=1, column=2, padx=5)
+
+        # Оттенки серого
+        self.grayscale_button = tk.Button(self.processing_frame, text="Оттенки серого", command=self.apply_grayscale)
+        self.grayscale_button.grid(row=1, column=3, padx=5)
+
 
     def load_image(self):
         file_types = [("Image files", "*.jpg *.jpeg *.png"), ("All files", "*.*")]
@@ -75,7 +104,6 @@ class ImageProcessingApp:
             except Exception as e:
                 messagebox.showerror("Ошибка", f"Ошибка отображения: {str(e)}")
 
-    # Добавляем в класс ImageProcessingApp
     def capture_from_camera(self):
         cap = cv2.VideoCapture(0)
         if not cap.isOpened():
@@ -115,6 +143,47 @@ class ImageProcessingApp:
 
         cap.release()
         preview_window.destroy()
+
+    def apply_channel(self):
+        if self.current_image is not None:
+            channel = self.channel_var.get()
+            if channel != "none":
+                channel_img = self.current_image.copy()
+
+                if channel == "red":
+                    channel_img[:, :, 0] = 0
+                    channel_img[:, :, 1] = 0
+                elif channel == "green":
+                    channel_img[:, :, 0] = 0
+                    channel_img[:, :, 2] = 0
+                elif channel == "blue":
+                    channel_img[:, :, 1] = 0
+                    channel_img[:, :, 2] = 0
+
+                self.current_image = channel_img
+                self.show_image()
+
+    def apply_border(self):
+        if self.current_image is not None:
+            try:
+                size = int(self.border_size.get())
+                bordered_img = cv2.copyMakeBorder(
+                    self.current_image,
+                    size, size, size, size,
+                    cv2.BORDER_CONSTANT,
+                    value=[0, 0, 0]
+                )
+                self.current_image = bordered_img
+                self.show_image()
+            except ValueError:
+                messagebox.showerror("Ошибка", "Введите целое число для размера границы")
+
+    def apply_grayscale(self):
+        if self.current_image is not None:
+            gray_img = cv2.cvtColor(self.current_image, cv2.COLOR_BGR2GRAY)
+            gray_img = cv2.cvtColor(gray_img, cv2.COLOR_GRAY2BGR)
+            self.current_image = gray_img
+            self.show_image()
 
 if __name__ == "__main__":
     root = tk.Tk()
