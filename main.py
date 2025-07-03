@@ -75,6 +75,46 @@ class ImageProcessingApp:
             except Exception as e:
                 messagebox.showerror("Ошибка", f"Ошибка отображения: {str(e)}")
 
+    # Добавляем в класс ImageProcessingApp
+    def capture_from_camera(self):
+        cap = cv2.VideoCapture(0)
+        if not cap.isOpened():
+            messagebox.showerror("Ошибка", "Не удалось подключиться к веб-камере")
+            return
+
+        preview = tk.Toplevel(self.root)
+        preview.title("Веб-камера")
+        preview_label = tk.Label(preview)
+        preview_label.pack()
+
+        def update_preview():
+            ret, frame = cap.read()
+            if ret:
+                frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+                img = Image.fromarray(frame_rgb)
+                imgtk = ImageTk.PhotoImage(image=img)
+                preview_label.imgtk = imgtk
+                preview_label.configure(image=imgtk)
+                preview_label.after(10, update_preview)
+            else:
+                cap.release()
+                preview.destroy()
+
+        capture_btn = tk.Button(preview, text="Снять фото",
+                                command=lambda: self.take_photo(cap, preview))
+        capture_btn.pack(pady=10)
+
+        update_preview()
+
+    def take_photo(self, cap, preview_window):
+        ret, frame = cap.read()
+        if ret:
+            self.original_image = frame
+            self.current_image = self.original_image.copy()
+            self.show_image()
+
+        cap.release()
+        preview_window.destroy()
 
 if __name__ == "__main__":
     root = tk.Tk()
