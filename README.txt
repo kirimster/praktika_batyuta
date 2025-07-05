@@ -1,6 +1,6 @@
-![Python 3.6](https://img.shields.io/badge/Python-3.6.8-blue)
+![Python 3.8](https://img.shields.io/badge/Python-3.8-blue)
 ![OpenCV](https://img.shields.io/badge/OpenCV-4.5.5-green)
-![PyTorch](https://img.shields.io/badge/PyTorch-1.10.2-red)
+![PyTorch](https://img.shields.io/badge/PyTorch-1.11-red)
 
 Десктопное приложение для обработки изображений с поддержкой базовых операций и работы с веб-камерой.
 
