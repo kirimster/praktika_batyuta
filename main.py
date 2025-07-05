@@ -8,7 +8,7 @@ import numpy as np
 class ImageProcessingApp:
     def __init__(self, root):
         self.root = root
-        self.root.title("Image Processing App")
+        self.root.title("Обработка изображений")
         self.root.geometry("1000x700")
 
         # Переменные для изображений
